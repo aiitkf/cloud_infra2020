@@ -1,0 +1,76 @@
+sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
+"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-0.qcow2 10G; 
+sudo virt-install --connect qemu:///system \
+-n test4-0 \
+--memory=512 \
+--vcpus=1 \
+--network bridge=br0 \
+--import \
+--disk path=/var/kvm/guest/test4-0.qcow2 \
+--disk path=/var/kvm/guest/test4-0_config.iso,device=cdrom \
+--os-type=linux \
+--os-variant=centos7.0 \
+--graphics none \
+--hvm \
+--virt-type kvm 
+"?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
+"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-1.qcow2 10G; 
+sudo virt-install --connect qemu:///system \
+-n test4-1 \
+--memory=512 \
+--vcpus=1 \
+--network bridge=br0 \
+--import \
+--disk path=/var/kvm/guest/test4-1.qcow2 \
+--disk path=/var/kvm/guest/test4-1_config.iso,device=cdrom \
+--os-type=linux \
+--os-variant=centos7.0 \
+--graphics none \
+--hvm \
+--virt-type kvm 
+"?sudo ssh root@192.168.6.3 -i /var/www/sshkeys/id_rsa_lan \
+"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-2.qcow2 10G; 
+sudo virt-install --connect qemu:///system \
+-n test4-2 \
+--memory=512 \
+--vcpus=1 \
+--network bridge=br0 \
+--import \
+--disk path=/var/kvm/guest/test4-2.qcow2 \
+--disk path=/var/kvm/guest/test4-2_config.iso,device=cdrom \
+--os-type=linux \
+--os-variant=centos7.0 \
+--graphics none \
+--hvm \
+--virt-type kvm 
+"?sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
+"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-3.qcow2 10G; 
+sudo virt-install --connect qemu:///system \
+-n test4-3 \
+--memory=512 \
+--vcpus=1 \
+--network bridge=br0 \
+--import \
+--disk path=/var/kvm/guest/test4-3.qcow2 \
+--disk path=/var/kvm/guest/test4-3_config.iso,device=cdrom \
+--os-type=linux \
+--os-variant=centos7.0 \
+--graphics none \
+--hvm \
+--virt-type kvm 
+"?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
+"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-4.qcow2 10G; 
+sudo virt-install --connect qemu:///system \
+-n test4-4 \
+--memory=512 \
+--vcpus=1 \
+--network bridge=br0 \
+--import \
+--disk path=/var/kvm/guest/test4-4.qcow2 \
+--disk path=/var/kvm/guest/test4-4_config.iso,device=cdrom \
+--os-type=linux \
+--os-variant=centos7.0 \
+--graphics none \
+--hvm \
+--virt-type kvm 
+"?
