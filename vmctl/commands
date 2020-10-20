@@ -1,73 +1,213 @@
 sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
-"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-0.qcow2 10G; 
+"echo 'instance-id: $(uuidgen)
+local-hostname: test1-0
+' > /var/kvm/guest/meta-data&
+echo '#cloud-config
+preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
+hostname: test1-0
+# user: testuser
+password: 3Q20aiit
+chpasswd: { expire: False }
+ssh_pwauth: True
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
+# manage_etc_hosts: True
+timezone: "Asia/Tokyo"
+' > /var/kvm/guest/user-data&
+echo 'version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 192.168.7.91/23
+    gateway4: 192.168.6.254
+    nameservers:
+      addresses:
+      - 202.225.94.247
+      - 210.147.240.193
+' > /var/kvm/guest/network-config.yaml;
+cd /var/kvm/guest;
+cloud-localds --network-config network-config.yaml test1-0_config.iso user-data meta-data;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-0.qcow2 10G;
 sudo virt-install --connect qemu:///system \
--n test4-0 \
+-n test1-0 \
 --memory=512 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
---disk path=/var/kvm/guest/test4-0.qcow2 \
---disk path=/var/kvm/guest/test4-0_config.iso,device=cdrom \
+--disk path=/var/kvm/guest/test1-0.qcow2 \
+--disk path=/var/kvm/guest/test1-0_config.iso,device=cdrom \
 --os-type=linux \
 --os-variant=centos7.0 \
 --graphics none \
 --hvm \
 --virt-type kvm 
 "?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
-"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-1.qcow2 10G; 
+"echo 'instance-id: $(uuidgen)
+local-hostname: test1-1
+' > /var/kvm/guest/meta-data&
+echo '#cloud-config
+preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
+hostname: test1-1
+# user: testuser
+password: 3Q20aiit
+chpasswd: { expire: False }
+ssh_pwauth: True
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
+# manage_etc_hosts: True
+timezone: "Asia/Tokyo"
+' > /var/kvm/guest/user-data&
+echo 'version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 192.168.7.92/23
+    gateway4: 192.168.6.254
+    nameservers:
+      addresses:
+      - 202.225.94.247
+      - 210.147.240.193
+' > /var/kvm/guest/network-config.yaml;
+cd /var/kvm/guest;
+cloud-localds --network-config network-config.yaml test1-1_config.iso user-data meta-data;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-1.qcow2 10G;
 sudo virt-install --connect qemu:///system \
--n test4-1 \
+-n test1-1 \
 --memory=512 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
---disk path=/var/kvm/guest/test4-1.qcow2 \
---disk path=/var/kvm/guest/test4-1_config.iso,device=cdrom \
+--disk path=/var/kvm/guest/test1-1.qcow2 \
+--disk path=/var/kvm/guest/test1-1_config.iso,device=cdrom \
 --os-type=linux \
 --os-variant=centos7.0 \
 --graphics none \
 --hvm \
 --virt-type kvm 
 "?sudo ssh root@192.168.6.3 -i /var/www/sshkeys/id_rsa_lan \
-"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-2.qcow2 10G; 
+"echo 'instance-id: $(uuidgen)
+local-hostname: test1-2
+' > /var/kvm/guest/meta-data&
+echo '#cloud-config
+preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
+hostname: test1-2
+# user: testuser
+password: 3Q20aiit
+chpasswd: { expire: False }
+ssh_pwauth: True
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
+# manage_etc_hosts: True
+timezone: "Asia/Tokyo"
+' > /var/kvm/guest/user-data&
+echo 'version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 192.168.7.93/23
+    gateway4: 192.168.6.254
+    nameservers:
+      addresses:
+      - 202.225.94.247
+      - 210.147.240.193
+' > /var/kvm/guest/network-config.yaml;
+cd /var/kvm/guest;
+cloud-localds --network-config network-config.yaml test1-2_config.iso user-data meta-data;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-2.qcow2 10G;
 sudo virt-install --connect qemu:///system \
--n test4-2 \
+-n test1-2 \
 --memory=512 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
---disk path=/var/kvm/guest/test4-2.qcow2 \
---disk path=/var/kvm/guest/test4-2_config.iso,device=cdrom \
+--disk path=/var/kvm/guest/test1-2.qcow2 \
+--disk path=/var/kvm/guest/test1-2_config.iso,device=cdrom \
 --os-type=linux \
 --os-variant=centos7.0 \
 --graphics none \
 --hvm \
 --virt-type kvm 
 "?sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
-"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-3.qcow2 10G; 
+"echo 'instance-id: $(uuidgen)
+local-hostname: test1-3
+' > /var/kvm/guest/meta-data&
+echo '#cloud-config
+preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
+hostname: test1-3
+# user: testuser
+password: 3Q20aiit
+chpasswd: { expire: False }
+ssh_pwauth: True
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
+# manage_etc_hosts: True
+timezone: "Asia/Tokyo"
+' > /var/kvm/guest/user-data&
+echo 'version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 192.168.7.94/23
+    gateway4: 192.168.6.254
+    nameservers:
+      addresses:
+      - 202.225.94.247
+      - 210.147.240.193
+' > /var/kvm/guest/network-config.yaml;
+cd /var/kvm/guest;
+cloud-localds --network-config network-config.yaml test1-3_config.iso user-data meta-data;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-3.qcow2 10G;
 sudo virt-install --connect qemu:///system \
--n test4-3 \
+-n test1-3 \
 --memory=512 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
---disk path=/var/kvm/guest/test4-3.qcow2 \
---disk path=/var/kvm/guest/test4-3_config.iso,device=cdrom \
+--disk path=/var/kvm/guest/test1-3.qcow2 \
+--disk path=/var/kvm/guest/test1-3_config.iso,device=cdrom \
 --os-type=linux \
 --os-variant=centos7.0 \
 --graphics none \
 --hvm \
 --virt-type kvm 
 "?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
-"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test4-4.qcow2 10G; 
+"echo 'instance-id: $(uuidgen)
+local-hostname: test1-4
+' > /var/kvm/guest/meta-data&
+echo '#cloud-config
+preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
+hostname: test1-4
+# user: testuser
+password: 3Q20aiit
+chpasswd: { expire: False }
+ssh_pwauth: True
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
+# manage_etc_hosts: True
+timezone: "Asia/Tokyo"
+' > /var/kvm/guest/user-data&
+echo 'version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 192.168.7.95/23
+    gateway4: 192.168.6.254
+    nameservers:
+      addresses:
+      - 202.225.94.247
+      - 210.147.240.193
+' > /var/kvm/guest/network-config.yaml;
+cd /var/kvm/guest;
+cloud-localds --network-config network-config.yaml test1-4_config.iso user-data meta-data;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-4.qcow2 10G;
 sudo virt-install --connect qemu:///system \
--n test4-4 \
+-n test1-4 \
 --memory=512 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
---disk path=/var/kvm/guest/test4-4.qcow2 \
---disk path=/var/kvm/guest/test4-4_config.iso,device=cdrom \
+--disk path=/var/kvm/guest/test1-4.qcow2 \
+--disk path=/var/kvm/guest/test1-4_config.iso,device=cdrom \
 --os-type=linux \
 --os-variant=centos7.0 \
 --graphics none \

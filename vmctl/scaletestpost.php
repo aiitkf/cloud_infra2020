@@ -50,7 +50,6 @@ $vmcount = $_POST['vmcount'];
 $split = explode(".", $ip);
 $ip_lastoctet = $split[3];
 $ip_network = $split[0] . "." . $split[1] . "." . $split[2] . ".";
-file_put_contents("commands", "");
 if (substr($ip, 0, 10) <> "192.168.7." || $ip_lastoctet < 1 || $ip_lastoctet > 254) {
     //IPアドレスの指定がおかしいとき
     echo "{'error':{'message':'invalid ip address','code':209}}\n";
@@ -160,24 +159,10 @@ if ($ostype == "centos7") {
     exit;
 }
 
+file_put_contents("commands", ""); // 作業用ファイルを空にする
+
 for ($i = 0; $i < $vmcount; $i++) {
     // ループが長いので注意
-    // meta-data, user-data, network-config.yaml作成、iso作成、scp転送、db挿入、virt-installまでループさせる
-    // meta-data, network-config.yaml, user-dataを作成
-    $vmname = $vmnamearr[$i];
-    $ip = $iparr[$i];
-    require "../vmctl/seeddata/${ostype}/meta-data.php";
-    file_put_contents('/var/kvm/guest/meta-data', $metadata); //パーミッションに注意、0666にしておく
-    file_put_contents('/var/kvm/guest/user-data', $userdata); //パーミッションに注意、0666にしておく
-    file_put_contents('/var/kvm/guest/network-config.yaml', $networkconfig); //パーミッションに注意、0666にしておく
-
-    //ローカルにメタデータISO作成
-    $vmname_shell = escapeshellcmd($vmnamearr[$i]);
-    $cmd = "cd /var/kvm/guest/; "
-        . "sudo cloud-localds --network-config network-config.yaml ${vmname_shell}_config.iso user-data meta-data";
-    exec($cmd);
-    //www-dataをsudoersに入れておくこと、またはパーミッションをいじってもいい
-    //apache ALL=(ALL) NOPASSWD: /bin/genisoimage
 
     // 該当サーバのIPアドレスをDBから取得する
     $sql = "SELECT ipv4 FROM server WHERE id=$deployserverarr[$i]";
@@ -188,22 +173,29 @@ for ($i = 0; $i < $vmcount; $i++) {
         exit;
     }
 
-    // 該当サーバにSSH接続する
-    require "ssh2connect.php";
-
-    //metadataのisoをscpで転送する
-    $local_file = "/var/kvm/guest/" . $vmnamearr[$i] . "_config.iso";
-    $remote_file = "/var/kvm/guest/" . $vmnamearr[$i] . "_config.iso";
-    if (!ssh2_scp_send($connection, $local_file, $remote_file)) {
-        echo "{'error':{'message':'ssh transfer failed. trial=$i','code':220}}\n";
-        exit;
-    }
-    unlink($local_file); //ローカルのISOは削除 権限に注意
-
+    // sshリモートログイン
+    // リモートにmeta-data, network-config.yaml, user-dataを作成
+    // リモートにメタデータISO作成
     //qemu-img createでファイル作成コマンドを書き込み
-    $cmd = "\"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/${imgfile}"
-        . " /var/kvm/guest/" . $vmnamearr[$i] . ".qcow2 " . $disksize . "G; \n";
-    file_put_contents("commands", "sudo ssh root@${ip_destserver} -i /var/www/sshkeys/id_rsa_lan \\\n" . $cmd, FILE_APPEND | LOCK_EX);
+    //virt-installで初期設定コマンドを書き込み
+
+    $vmname = $vmnamearr[$i];
+    $vmname_shell = escapeshellcmd($vmname);
+    $ip = $iparr[$i];
+    require "../vmctl/seeddata/${ostype}/meta-data.php";
+    require "seeddata/virt-install.php";
+    $virtinstall = $cmd;
+    $cmd = <<<EOC
+sudo ssh root@${ip_destserver} -i /var/www/sshkeys/id_rsa_lan \\
+"echo '${metadata}' > /var/kvm/guest/meta-data&
+echo '${userdata}' > /var/kvm/guest/user-data&
+echo '${networkconfig}' > /var/kvm/guest/network-config.yaml;
+cd /var/kvm/guest;
+cloud-localds --network-config network-config.yaml ${vmname_shell}_config.iso user-data meta-data;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/${imgfile} /var/kvm/guest/${vmname_shell}.qcow2 ${disksize}G;
+${virtinstall}"?
+EOC;
+file_put_contents('commands', $cmd, FILE_APPEND | LOCK_EX);
 
     //サーバ情報をDBに入れる
     $vmname_sql = SQLite3::escapeString($vmnamearr[$i]);
@@ -219,13 +211,9 @@ for ($i = 0; $i < $vmcount; $i++) {
         echo "{'error':{'message':'database error.','code':217}}\n";
         exit;
     }
-
-    //virt-installで初期設定コマンドを書き込み
-    $vmname_shell = escapeshellcmd($vmnamearr[$i]);
-    require "seeddata/virt-install.php";
-    file_put_contents("commands",  $cmd . "\"?", FILE_APPEND | LOCK_EX);
 } //user-data作成からのforの終わり
 
+//passthru('exec 2>&1; xargs -P5 -t -d ? --arg-file commands -I {} sh -c {}'); //qemu-img create, virt-installを並列で実行
 exec('xargs -P5 -t -d ? --arg-file commands -I {} sh -c {}'); //qemu-img create, virt-installを並列で実行
 //file_put_contents("commands", "");
 echo "{'success'}\n";
