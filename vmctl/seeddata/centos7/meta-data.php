@@ -24,11 +24,11 @@ EOT;
 // user-data
 $userdata = <<< EOT
 #cloud-config
-preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
+preserve_hostname: false # falseにするとここで指定したhostnameに変更される
 hostname: ${vmname}
 user: ${username}
 password: ${passwd}
-chpasswd: { expire: True }
+chpasswd: { expire: True } # 初回ログイン時にパスワード変更を強制
 ssh_pwauth: True
 ssh_authorized_keys:
   - ${pubkey}

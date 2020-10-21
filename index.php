@@ -7,9 +7,8 @@
 
 <body>
     <?php
-    echo "This is r7e1. PHP is working.<br />";
+    echo "This is r7e1. PHP is working.<br /><a href=\"info.php\">phpinfo</a>";
     ?>
-    <a href="info.php">phpinfo</a>
 </body>
 
 
