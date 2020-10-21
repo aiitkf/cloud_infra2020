@@ -27,7 +27,7 @@ $userdata = <<< EOT
 #cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
 hostname: $vmname
-# user: testuser
+user: ${username}
 password: 3Q20aiit
 chpasswd: { expire: False }
 ssh_pwauth: True
