@@ -12,7 +12,7 @@ version: 2
 ethernets:
   eth0:
     addresses:
-      - $ip/23
+      - ${ip}/23
     gateway4: 192.168.6.254
     nameservers:
       addresses:
@@ -25,13 +25,13 @@ EOT;
 $userdata = <<< EOT
 #cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
-hostname: $vmname
+hostname: ${vmname}
 user: ${username}
 password: ${passwd}
 chpasswd: { expire: True }
 ssh_pwauth: True
 ssh_authorized_keys:
-  - $pubkey
+  - ${pubkey}
 # manage_etc_hosts: True
 timezone: "Asia/Tokyo"
 
