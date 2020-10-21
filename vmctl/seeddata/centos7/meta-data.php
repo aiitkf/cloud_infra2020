@@ -1,6 +1,6 @@
 <?php
 // meta-data
-$metadata= <<<EOT
+$metadata = <<<EOT
 instance-id: $(uuidgen)
 local-hostname: $vmname
 

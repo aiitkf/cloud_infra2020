@@ -1,6 +1,5 @@
-sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
+sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
 "echo 'instance-id: $(uuidgen)
-local-hostname: test1-0
 ' > /var/kvm/guest/meta-data&
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
@@ -16,9 +15,11 @@ timezone: "Asia/Tokyo"
 ' > /var/kvm/guest/user-data&
 echo 'version: 2
 ethernets:
-  eth0:
+  interface0:
+    match:
+      name: en*
     addresses:
-      - 192.168.7.91/23
+    - 192.168.7.81/23
     gateway4: 192.168.6.254
     nameservers:
       addresses:
@@ -27,23 +28,22 @@ ethernets:
 ' > /var/kvm/guest/network-config.yaml;
 cd /var/kvm/guest;
 cloud-localds --network-config network-config.yaml test1-0_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-0.qcow2 10G;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-0.qcow2 10G;
 sudo virt-install --connect qemu:///system \
 -n test1-0 \
---memory=512 \
+--memory=1024 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
 --disk path=/var/kvm/guest/test1-0.qcow2 \
 --disk path=/var/kvm/guest/test1-0_config.iso,device=cdrom \
 --os-type=linux \
---os-variant=centos7.0 \
+--os-variant=ubuntu20.04 \
 --graphics none \
 --hvm \
 --virt-type kvm 
-"?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
+"?sudo ssh root@192.168.6.3 -i /var/www/sshkeys/id_rsa_lan \
 "echo 'instance-id: $(uuidgen)
-local-hostname: test1-1
 ' > /var/kvm/guest/meta-data&
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
@@ -59,9 +59,11 @@ timezone: "Asia/Tokyo"
 ' > /var/kvm/guest/user-data&
 echo 'version: 2
 ethernets:
-  eth0:
+  interface0:
+    match:
+      name: en*
     addresses:
-      - 192.168.7.92/23
+    - 192.168.7.82/23
     gateway4: 192.168.6.254
     nameservers:
       addresses:
@@ -70,23 +72,22 @@ ethernets:
 ' > /var/kvm/guest/network-config.yaml;
 cd /var/kvm/guest;
 cloud-localds --network-config network-config.yaml test1-1_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-1.qcow2 10G;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-1.qcow2 10G;
 sudo virt-install --connect qemu:///system \
 -n test1-1 \
---memory=512 \
+--memory=1024 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
 --disk path=/var/kvm/guest/test1-1.qcow2 \
 --disk path=/var/kvm/guest/test1-1_config.iso,device=cdrom \
 --os-type=linux \
---os-variant=centos7.0 \
+--os-variant=ubuntu20.04 \
 --graphics none \
 --hvm \
 --virt-type kvm 
-"?sudo ssh root@192.168.6.3 -i /var/www/sshkeys/id_rsa_lan \
+"?sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
 "echo 'instance-id: $(uuidgen)
-local-hostname: test1-2
 ' > /var/kvm/guest/meta-data&
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
@@ -102,9 +103,11 @@ timezone: "Asia/Tokyo"
 ' > /var/kvm/guest/user-data&
 echo 'version: 2
 ethernets:
-  eth0:
+  interface0:
+    match:
+      name: en*
     addresses:
-      - 192.168.7.93/23
+    - 192.168.7.83/23
     gateway4: 192.168.6.254
     nameservers:
       addresses:
@@ -113,23 +116,22 @@ ethernets:
 ' > /var/kvm/guest/network-config.yaml;
 cd /var/kvm/guest;
 cloud-localds --network-config network-config.yaml test1-2_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-2.qcow2 10G;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-2.qcow2 10G;
 sudo virt-install --connect qemu:///system \
 -n test1-2 \
---memory=512 \
+--memory=1024 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
 --disk path=/var/kvm/guest/test1-2.qcow2 \
 --disk path=/var/kvm/guest/test1-2_config.iso,device=cdrom \
 --os-type=linux \
---os-variant=centos7.0 \
+--os-variant=ubuntu20.04 \
 --graphics none \
 --hvm \
 --virt-type kvm 
-"?sudo ssh root@192.168.6.4 -i /var/www/sshkeys/id_rsa_lan \
+"?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
 "echo 'instance-id: $(uuidgen)
-local-hostname: test1-3
 ' > /var/kvm/guest/meta-data&
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
@@ -145,9 +147,11 @@ timezone: "Asia/Tokyo"
 ' > /var/kvm/guest/user-data&
 echo 'version: 2
 ethernets:
-  eth0:
+  interface0:
+    match:
+      name: en*
     addresses:
-      - 192.168.7.94/23
+    - 192.168.7.84/23
     gateway4: 192.168.6.254
     nameservers:
       addresses:
@@ -156,23 +160,22 @@ ethernets:
 ' > /var/kvm/guest/network-config.yaml;
 cd /var/kvm/guest;
 cloud-localds --network-config network-config.yaml test1-3_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-3.qcow2 10G;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-3.qcow2 10G;
 sudo virt-install --connect qemu:///system \
 -n test1-3 \
---memory=512 \
+--memory=1024 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
 --disk path=/var/kvm/guest/test1-3.qcow2 \
 --disk path=/var/kvm/guest/test1-3_config.iso,device=cdrom \
 --os-type=linux \
---os-variant=centos7.0 \
+--os-variant=ubuntu20.04 \
 --graphics none \
 --hvm \
 --virt-type kvm 
-"?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
+"?sudo ssh root@192.168.6.3 -i /var/www/sshkeys/id_rsa_lan \
 "echo 'instance-id: $(uuidgen)
-local-hostname: test1-4
 ' > /var/kvm/guest/meta-data&
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
@@ -188,9 +191,11 @@ timezone: "Asia/Tokyo"
 ' > /var/kvm/guest/user-data&
 echo 'version: 2
 ethernets:
-  eth0:
+  interface0:
+    match:
+      name: en*
     addresses:
-      - 192.168.7.95/23
+    - 192.168.7.85/23
     gateway4: 192.168.6.254
     nameservers:
       addresses:
@@ -199,17 +204,17 @@ ethernets:
 ' > /var/kvm/guest/network-config.yaml;
 cd /var/kvm/guest;
 cloud-localds --network-config network-config.yaml test1-4_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/CentOS-7-x86_64-GenericCloud.qcow2 /var/kvm/guest/test1-4.qcow2 10G;
+qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-4.qcow2 10G;
 sudo virt-install --connect qemu:///system \
 -n test1-4 \
---memory=512 \
+--memory=1024 \
 --vcpus=1 \
 --network bridge=br0 \
 --import \
 --disk path=/var/kvm/guest/test1-4.qcow2 \
 --disk path=/var/kvm/guest/test1-4_config.iso,device=cdrom \
 --os-type=linux \
---os-variant=centos7.0 \
+--os-variant=ubuntu20.04 \
 --graphics none \
 --hvm \
 --virt-type kvm 
