@@ -27,8 +27,8 @@ $userdata = <<< EOT
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
 hostname: $vmname
 user: ${username}
-password: 3Q20aiit
-chpasswd: { expire: False }
+password: ${passwd}
+chpasswd: { expire: True }
 ssh_pwauth: True
 ssh_authorized_keys:
   - $pubkey
