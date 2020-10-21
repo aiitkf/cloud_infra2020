@@ -93,13 +93,6 @@ switch (strtolower($_SERVER['REQUEST_METHOD']) . ':' . $paths[0]) {
       echo "{'error':{'message':'no username','code':101}}\n";
     }
     break;
-    case 'post:scaletest': //新しいVMをセットアップ
-      if ($id) {
-        include "scaletestpost.php";
-      } else {
-        echo "{'error':{'message':'no vmname','code':102}}\n";
-      }
-      break;
     default:
     echo "{'error':{'message':'api request method error','code':103}}\n";
 }

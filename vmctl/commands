@@ -4,9 +4,9 @@ sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
 hostname: test1-0
-# user: testuser
-password: 3Q20aiit
-chpasswd: { expire: False }
+user: wan
+password: 1111
+chpasswd: { expire: True }
 ssh_pwauth: True
 ssh_authorized_keys:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
@@ -48,9 +48,9 @@ sudo virt-install --connect qemu:///system \
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
 hostname: test1-1
-# user: testuser
-password: 3Q20aiit
-chpasswd: { expire: False }
+user: wan
+password: 1111
+chpasswd: { expire: True }
 ssh_pwauth: True
 ssh_authorized_keys:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
@@ -92,9 +92,9 @@ sudo virt-install --connect qemu:///system \
 echo '#cloud-config
 preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
 hostname: test1-2
-# user: testuser
-password: 3Q20aiit
-chpasswd: { expire: False }
+user: wan
+password: 1111
+chpasswd: { expire: True }
 ssh_pwauth: True
 ssh_authorized_keys:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
@@ -125,94 +125,6 @@ sudo virt-install --connect qemu:///system \
 --import \
 --disk path=/var/kvm/guest/test1-2.qcow2 \
 --disk path=/var/kvm/guest/test1-2_config.iso,device=cdrom \
---os-type=linux \
---os-variant=ubuntu20.04 \
---graphics none \
---hvm \
---virt-type kvm 
-"?sudo ssh root@192.168.6.2 -i /var/www/sshkeys/id_rsa_lan \
-"echo 'instance-id: $(uuidgen)
-' > /var/kvm/guest/meta-data&
-echo '#cloud-config
-preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
-hostname: test1-3
-# user: testuser
-password: 3Q20aiit
-chpasswd: { expire: False }
-ssh_pwauth: True
-ssh_authorized_keys:
-  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
-# manage_etc_hosts: True
-timezone: "Asia/Tokyo"
-' > /var/kvm/guest/user-data&
-echo 'version: 2
-ethernets:
-  interface0:
-    match:
-      name: en*
-    addresses:
-    - 192.168.7.84/23
-    gateway4: 192.168.6.254
-    nameservers:
-      addresses:
-      - 202.225.94.247
-      - 210.147.240.193
-' > /var/kvm/guest/network-config.yaml;
-cd /var/kvm/guest;
-cloud-localds --network-config network-config.yaml test1-3_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-3.qcow2 10G;
-sudo virt-install --connect qemu:///system \
--n test1-3 \
---memory=1024 \
---vcpus=1 \
---network bridge=br0 \
---import \
---disk path=/var/kvm/guest/test1-3.qcow2 \
---disk path=/var/kvm/guest/test1-3_config.iso,device=cdrom \
---os-type=linux \
---os-variant=ubuntu20.04 \
---graphics none \
---hvm \
---virt-type kvm 
-"?sudo ssh root@192.168.6.3 -i /var/www/sshkeys/id_rsa_lan \
-"echo 'instance-id: $(uuidgen)
-' > /var/kvm/guest/meta-data&
-echo '#cloud-config
-preserve_hostname: false # falseにするとprivate ipをもとにしたホスト名
-hostname: test1-4
-# user: testuser
-password: 3Q20aiit
-chpasswd: { expire: False }
-ssh_pwauth: True
-ssh_authorized_keys:
-  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKl8pmmIk0WUptH0fw4X+1bj2qiBkC2ZqrL1yvxF0d6u
-# manage_etc_hosts: True
-timezone: "Asia/Tokyo"
-' > /var/kvm/guest/user-data&
-echo 'version: 2
-ethernets:
-  interface0:
-    match:
-      name: en*
-    addresses:
-    - 192.168.7.85/23
-    gateway4: 192.168.6.254
-    nameservers:
-      addresses:
-      - 202.225.94.247
-      - 210.147.240.193
-' > /var/kvm/guest/network-config.yaml;
-cd /var/kvm/guest;
-cloud-localds --network-config network-config.yaml test1-4_config.iso user-data meta-data;
-qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/focal-server-cloudimg-amd64.img /var/kvm/guest/test1-4.qcow2 10G;
-sudo virt-install --connect qemu:///system \
--n test1-4 \
---memory=1024 \
---vcpus=1 \
---network bridge=br0 \
---import \
---disk path=/var/kvm/guest/test1-4.qcow2 \
---disk path=/var/kvm/guest/test1-4_config.iso,device=cdrom \
 --os-type=linux \
 --os-variant=ubuntu20.04 \
 --graphics none \

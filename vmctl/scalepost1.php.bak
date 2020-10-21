@@ -1,4 +1,8 @@
 <?php
+// 並列動作しないバージョン
+// 5台で8秒くらいかかる
+// 一番最初のバージョン
+
 if (
     !isset($_POST['username']) || !isset($_POST['passwd'])
     || !isset($_POST['ip']) || !isset($_POST['ostype'])
@@ -50,7 +54,6 @@ $vmcount = $_POST['vmcount'];
 $split = explode(".", $ip);
 $ip_lastoctet = $split[3];
 $ip_network = $split[0] . "." . $split[1] . "." . $split[2] . ".";
-file_put_contents("commands", "");
 if (substr($ip, 0, 10) <> "192.168.7." || $ip_lastoctet < 1 || $ip_lastoctet > 254) {
     //IPアドレスの指定がおかしいとき
     echo "{'error':{'message':'invalid ip address','code':209}}\n";
@@ -200,10 +203,14 @@ for ($i = 0; $i < $vmcount; $i++) {
     }
     unlink($local_file); //ローカルのISOは削除 権限に注意
 
-    //qemu-img createでファイル作成コマンドを書き込み
-    $cmd = "\"qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/${imgfile}"
-        . " /var/kvm/guest/" . $vmnamearr[$i] . ".qcow2 " . $disksize . "G; \n";
-    file_put_contents("commands", "sudo ssh root@${ip_destserver} -i /var/www/sshkeys/id_rsa_lan \\\n" . $cmd, FILE_APPEND | LOCK_EX);
+    //qemu-img createでファイル作成
+    $cmd = "sudo qemu-img create -f qcow2 -F qcow2 -b /var/kvm/master/${imgfile}"
+        . " /var/kvm/guest/" . $vmnamearr[$i] . ".qcow2 " . $disksize . "G";
+    if (!ssh2_exec($connection, $cmd)) {
+        //リモートでのファイル作成が失敗したとき
+        echo "{'error':{'message':'remote image creation failed.','code':221}}\n";
+        exit;
+    }
 
     //サーバ情報をDBに入れる
     $vmname_sql = SQLite3::escapeString($vmnamearr[$i]);
@@ -220,13 +227,14 @@ for ($i = 0; $i < $vmcount; $i++) {
         exit;
     }
 
-    //virt-installで初期設定コマンドを書き込み
+    //virt-installで初期設定
     $vmname_shell = escapeshellcmd($vmnamearr[$i]);
     require "seeddata/virt-install.php";
-    file_put_contents("commands",  $cmd . "\"?", FILE_APPEND | LOCK_EX);
+    if (!ssh2_exec($connection, $cmd)) {
+        //リモートでのVM作成が失敗したとき
+        echo "{'error':{'message':'remote vm start process failed.','code':222}}\n";
+        exit;
+    }
 } //user-data作成からのforの終わり
-
-exec('xargs -P5 -t -d ? --arg-file commands -I {} sh -c {}'); //qemu-img create, virt-installを並列で実行
-//file_put_contents("commands", "");
 echo "{'success'}\n";
 exit;
