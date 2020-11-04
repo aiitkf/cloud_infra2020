@@ -33,12 +33,8 @@ $pubkey = SQLite3::escapeString($pubkey);
 //sql文を生成
 $sql = "INSERT INTO user (fullname,username,passwd,pubkey) VALUES ('$fullname','$username','$passwd','$pubkey')";
 
-try {
-    $db = new SQLite3($db_name);
-} catch (Exception $e) {
-    echo "{'error':{'message':'no database connection','code':201}}\n";
-    echo $e->getTraceAsString();
-}
+// DB接続
+$db = dbconnect($db_name);
 
 //echo $sql;
 $db->exec($sql);

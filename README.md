@@ -3,3 +3,4 @@ Web API /var/www/html/
 テスト作業用 動作に影響せず ./test
 SSH Key /var/www/sshkeys  
 SQLite3ファイル /var/lib/phpliteadmin/vmctl.db  
+SQLiteの仕様で，時刻はすべてUTC

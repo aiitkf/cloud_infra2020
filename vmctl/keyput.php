@@ -13,6 +13,7 @@ if (!isset($put_param['passwd']) || !isset($put_param['newkey'])) {
 $passwd = $put_param['passwd'];
 $newkey = $put_param['newkey'];
 
+// DB接続
 $db = dbconnect($db_name);
 
 //ユーザ入力値のサニタイズ

@@ -12,12 +12,8 @@ if (!isset($delete_param['passwd'])) { //パスワードがあることを確認
 $passwd = $delete_param['passwd'];
 $newkey = "";
 
-try {
-    $db = new SQLite3($db_name);
-} catch (Exception $e) {
-    echo "{'error':{'message':'no database connection','code':201}}\n";
-    echo $e->getTraceAsString();
-}
+// DB接続
+$db = dbconnect($db_name);
 
 //ユーザ入力値のサニタイズ
 $id = SQLite3::escapeString($id);
