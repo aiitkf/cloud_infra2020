@@ -93,6 +93,10 @@ switch (strtolower($_SERVER['REQUEST_METHOD']) . ':' . $paths[0]) {
       echo "{'error':{'message':'no username','code':101}}\n";
     }
     break;
-    default:
+  case 'get:panel': // ブラウザから操作する画面
+  case 'post:panel': // ブラウザから操作する画面
+    include "panel.php";
+    break;
+  default:
     echo "{'error':{'message':'api request method error','code':103}}\n";
 }
