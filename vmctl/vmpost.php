@@ -49,16 +49,20 @@ if (substr($ip, 0, 10) <> "192.168.7." || $ip_lastoctet < 1 || $ip_lastoctet > 2
     exit;
 }
 
+// DB接続
+$db = dbconnect($db_name);
+
 if (isset($_POST['server']) && $_POST['server'] >= 2 && $_POST['server'] <= 4) {
     // 物理サーバ番号が指定されているとき
     $servernum = $_POST['server'];
 } else {
     // 物理サーバ番号が指定されていないとき
-    $servernum = mt_rand(2, 4);
+    // 最もメモリ消費が少ないサーバ番号を返す
+    $sql = "SELECT serverid FROM vm WHERE isdefined = 1 GROUP BY serverid ORDER BY sum(memory) ASC LIMIT 1";
+    $result = $db->querySingle($sql);
+    $servernum = $result;
+    //$servernum = mt_rand(2, 4);
 }
-
-// DB接続
-$db = dbconnect($db_name);
 
 // ユーザー認証，公開鍵取得
 $username_sql = SQLite3::escapeString($username); //サニタイズ
