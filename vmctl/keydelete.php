@@ -18,9 +18,8 @@ $db = dbconnect($db_name);
 //ユーザ入力値のサニタイズ
 $id = SQLite3::escapeString($id);
 $passwd = SQLite3::escapeString($passwd);
-$sql = "UPDATE user SET pubkey = '$newkey' WHERE username = '$id' AND passwd = '$passwd'";
+$sql = "DELETE FROM user WHERE username = '$id' AND passwd = '$passwd'";
 //echo $sql;
-$sql = SQLite3::escapeString($sql);
 $db->exec($sql);
 
 // 実行で更新された行が1行でなければエラー、1行なら成功
