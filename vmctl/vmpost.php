@@ -58,7 +58,7 @@ if (isset($_POST['server']) && $_POST['server'] >= 2 && $_POST['server'] <= 4) {
 } else {
     // 物理サーバ番号が指定されていないとき
     // 最もメモリ消費が少ないサーバ番号を返す
-    $sql = "SELECT serverid FROM vm WHERE isdefined = 1 GROUP BY serverid ORDER BY sum(memory) ASC LIMIT 1";
+    $sql = "SELECT id FROM server AS S LEFT OUTER JOIN (SELECT serverid, sum(memory) AS mem FROM vm WHERE isdefined = 1 GROUP BY serverid ORDER BY SUM(memory) ASC) A ON S.id = A.serverid order by mem asc limit 1";
     $result = $db->querySingle($sql);
     $servernum = $result;
     //$servernum = mt_rand(2, 4);
